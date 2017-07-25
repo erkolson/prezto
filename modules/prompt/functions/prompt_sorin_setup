@@ -39,6 +39,7 @@ prompt_sorin_git_info() {
       alias typeset='typeset -g'
       source "$_prompt_sorin_precmd_async_data"
       RPROMPT+='${git_info:+${(e)git_info[status]}}'
+      RPROMPT+=" [`kubectl config current-context`]"
       unalias typeset
     fi
 
