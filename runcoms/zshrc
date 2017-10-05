@@ -16,9 +16,39 @@ setopt inc_append_history
 # # Reloads the history whenever you use it
 setopt share_history
 
+# god awful python shit for ansible
 source ~/devco/bin/activate
-source <(kubectl completion zsh)
 
+# k8s
+source <(kubectl completion zsh)
+source <(kops completion zsh)
+alias k='kubectl'
+alias wp="watch -n1 'kubectl get pods -o wide'"
+export HELM_CONFIG_HOME=/Users/erik.olson/repos/helm-config
+ctx() {
+  context=$1
+  if [ -z "$context" ] ; then
+    echo "USAGE: ctx <context-name>"
+    echo "Available contexts:"
+    kubectl config get-contexts
+  else
+    kubectl config use-context $context
+  fi
+}
+kssh() {
+  POD=$1
+  NAMESPACE=${2:+"--namespace ${2}"}
+  search_command="kubectl get pods $POD $NAMESPACE -o jsonpath='{.status.hostIP}'"
+  ip=$(eval $search_command)
+  if [ $? -ne '0' ] ; then
+    echo "No hostIP found."
+    return 1
+  fi
+  echo "ssh ${ip}"
+  ssh $ip
+}
+
+# GO DO STUFF
 export GOPATH=$HOME/go
 export GOROOT=/usr/local/opt/go/libexec
 export PATH=$PATH:$GOPATH/bin
@@ -26,31 +56,23 @@ export PATH=$PATH:$GOROOT/bin
 export GOARCH=amd64
 export GOOS=darwin
 
+# AWS
 export AWS_REGION=${AWS_REGION:-'us-east-1'}
+source ~/.aws/aws_on.sh
 export RBENV_ROOT=/usr/local/var/rbenv
 if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
-export HELM_CONFIG_HOME=/Users/erik.olson/repos/helm-config
-
+# GCE
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/erik.olson/Downloads/google-cloud-sdk/path.zsh.inc' ]; then source '/Users/erik.olson/Downloads/google-cloud-sdk/path.zsh.inc'; fi
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/erik.olson/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then source '/Users/erik.olson/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
 
-# k8s
-alias ctx='kubectl config use-context'
-alias k='kubectl'
-alias wp='watch kubectl get pods'
-kssh() {
-  POD=$1
-  ip=$(kubectl get pods $POD -o jsonpath='{.status.hostIP}')
-  if [ $? -ne '0' ] ; then
-    exit 1
-  fi
-  echo "ssh ${ip}"
-  ssh $ip
-}
-
 # set the DRONE_SERVER and DRONE_TOKEN
 . ~/.drone
+
+# github key
+ssh-add ~/.ssh/erkolson.github.key
+
+# test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
