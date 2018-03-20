@@ -22,9 +22,14 @@ source ~/devco/bin/activate
 # k8s
 source <(kubectl completion zsh)
 source <(kops completion zsh)
+export KOPS_FEATURE_FLAGS="+DrainAndValidateRollingUpdate"
 alias k='kubectl'
 alias wp="watch -n1 'kubectl get pods -o wide'"
 export HELM_CONFIG_HOME=/Users/erik.olson/repos/helm-config
+# wp () {
+#   GREP=${1:+"| grep $1"}
+#   watch -n1 "kubectl get pods ${GREP}"
+# }
 ctx() {
   context=$1
   if [ -z "$context" ] ; then
@@ -48,6 +53,9 @@ kssh() {
   ssh $ip
 }
 
+adebug() { 
+  docker run -it --rm --pid=container:$1 --net=container:$1 --cap-add sys_admin chriswayg/toolbox bash 
+}
 # GO DO STUFF
 export GOPATH=$HOME/go
 export GOROOT=/usr/local/opt/go/libexec
@@ -76,3 +84,21 @@ if [ -f '/Users/erik.olson/Downloads/google-cloud-sdk/completion.zsh.inc' ]; the
 ssh-add ~/.ssh/erkolson.github.key
 
 # test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+#CTRL-T to fuzzily search for a file or directory in your home directory then insert its path at the cursor
+#ALT-C to fuzzily search for a directory in your home directory then cd into it
+#CTRL-R to fuzzily search your command line history then run an old command
+export FZF_DEFAULT_COMMAND="fd . $HOME"
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND="fd -t d . $HOME"
+export ANSIBLE_REPO=/Users/erik.olson/repos/devco-ansible
+
+export PATH=$PATH:/Users/erik.olson/repos/elasticsearch-dump/bin
+
+# rust
+export PATH="$HOME/.cargo/bin":$PATH
+
+source <(kubectl completion zsh)
+
+
