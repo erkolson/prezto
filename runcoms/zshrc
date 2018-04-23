@@ -17,11 +17,12 @@ setopt inc_append_history
 setopt share_history
 
 # god awful python shit for ansible
-source ~/devco/bin/activate
+source "${HOME}/virtualenvs/aws/bin/activate"
 
 # k8s
 source <(kubectl completion zsh)
 source <(kops completion zsh)
+source <(stern --completion zsh)
 export KOPS_FEATURE_FLAGS="+DrainAndValidateRollingUpdate"
 alias k='kubectl'
 alias wp="watch -n1 'kubectl get pods -o wide'"
@@ -66,7 +67,7 @@ export GOOS=darwin
 
 # AWS
 export AWS_REGION=${AWS_REGION:-'us-east-1'}
-source ~/.aws/aws_on.sh
+source ~/.aws/aws_on.include
 export RBENV_ROOT=/usr/local/var/rbenv
 if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
