@@ -16,13 +16,10 @@ setopt inc_append_history
 # # Reloads the history whenever you use it
 setopt share_history
 
-# god awful python shit for ansible
-source "${HOME}/virtualenvs/aws/bin/activate"
-
 # k8s
 source <(kubectl completion zsh)
-source <(kops completion zsh)
-source <(stern --completion zsh)
+#source <(kops completion zsh)
+#source <(stern --completion zsh)
 export KOPS_FEATURE_FLAGS="+DrainAndValidateRollingUpdate"
 alias k='kubectl'
 alias wp="watch -n1 'kubectl get pods -o wide'"
@@ -54,8 +51,8 @@ kssh() {
   ssh $ip
 }
 
-adebug() { 
-  docker run -it --rm --pid=container:$1 --net=container:$1 --cap-add sys_admin chriswayg/toolbox bash 
+adebug() {
+  docker run -it --rm --pid=container:$1 --net=container:$1 --cap-add sys_admin chriswayg/toolbox bash
 }
 # GO DO STUFF
 export GOPATH=$HOME/go
@@ -66,20 +63,16 @@ export GOARCH=amd64
 export GOOS=darwin
 
 # AWS
-export AWS_REGION=${AWS_REGION:-'us-east-1'}
-source ~/.aws/aws_on.include
-export RBENV_ROOT=/usr/local/var/rbenv
+#source "${HOME}/virtualenvs/aws/bin/activate"
+#export AWS_REGION=${AWS_REGION:-'us-east-1'}
+#source ~/.aws/aws_on.include
+#export RBENV_ROOT=/usr/local/var/rbenv
+
 if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
 # GCE
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/erik.olson/Downloads/google-cloud-sdk/path.zsh.inc' ]; then source '/Users/erik.olson/Downloads/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/erik.olson/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then source '/Users/erik.olson/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
-
 # set the DRONE_SERVER and DRONE_TOKEN
-. ~/.drone
+#. ~/.drone
 
 # github key
 ssh-add ~/.ssh/erkolson.github.key
@@ -103,3 +96,18 @@ export PATH="$HOME/.cargo/bin":$PATH
 source <(kubectl completion zsh)
 
 
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/oerik/google-cloud-sdk/path.zsh.inc' ]; then source '/Users/oerik/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/oerik/google-cloud-sdk/completion.zsh.inc' ]; then source '/Users/oerik/google-cloud-sdk/completion.zsh.inc'; fi
+
+# Troubleshoot access token
+gcloud_app_default() {
+  TOKEN=$(gcloud auth application-default print-access-token)
+  curl "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${TOKEN}"
+}
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /usr/local/bin/vault vault
